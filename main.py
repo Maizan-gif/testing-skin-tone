@@ -21,14 +21,16 @@ def skinTone_detector(image_data):
         return "An Unknown Skin Tone"
     
     for (x, y, w, h) in faces:
-        cv2.rectangle(img_cv,(x , y), (x+w, y+h), (255, 0, 0), 2)
-        face_img = img_cv[y:y+h, x:x+w]
+        cv2.rectangle(img_cv,(x , y), (x + w, y + h), (255, 0, 0), 2)
+        face_img = img_cv[y:y + h, x:x + w]
         face_img = cv2.resize(face_img, (200, 200))
         face_rgb = cv2.cvtColor(face_img, cv2.COLOR_BGR2RGB)
         break
-
+    
+    img_rgb_rectangle = cv2.cvtColor(img_cv, cv2.COLOR_BGR2RGB)
+    st.image(img_rgb_rectangle, caption="Detected Face", use_container_width=True)
+    
     hsv_img = cv2.cvtColor(face_rgb, cv2.COLOR_RGB2HSV)
-
     h, s, v = cv2.split(hsv_img)
     avg_h = np.median(h)
     avg_s = np.median(s)
