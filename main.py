@@ -14,11 +14,11 @@ def skinTone_detector(image_data):
     gray = cv2.cvtColor(img_cv, cv2.COLOR_BGR2GRAY)
 
     face_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_frontalface_default.xml')
-    faces = face_cascade.detectMultiScale(gray, -1.1, 5)
+    faces = face_cascade.detectMultiScale(gray, 1.1, 5)
     
     if len(faces) == 0:
         st.warning("Face undetected. Please Try again with clearer photos")
-        return "An Unknown Skin Tone", None
+        return "An Unknown Skin Tone"
     
     for (x, y, w, h) in faces:
         cv2.rectangle(img_cv,(x , y), (x + w, y + h), (255, 0, 0), 2)
@@ -28,6 +28,7 @@ def skinTone_detector(image_data):
         break
     
     img_rgb_rectangle = cv2.cvtColor(img_cv, cv2.COLOR_BGR2RGB)
+    st.image(img_rgb_rectangle, caption="Detected Face", use_container_width=True)
     
     hsv_img = cv2.cvtColor(face_rgb, cv2.COLOR_RGB2HSV)
     h, s, v = cv2.split(hsv_img)
@@ -38,13 +39,13 @@ def skinTone_detector(image_data):
     st.write(f"HSV rata-rata: H={avg_h:.2f}, S={avg_s:.2f}, V={avg_v:.2f}")
 
     if 0 <= avg_h <= 50 and 10 <= avg_s <= 60 and 80 <avg_v <= 255:
-        return "FAIR", img_rgb_rectangle
+        return "FAIR"
     elif 10 <= avg_h <= 50 and 30 <= avg_s <= 90 and 70 <avg_v <= 240:
-        return "LIGHT", img_rgb_rectangle
+        return "LIGHT"
     elif 10 <= avg_h <= 40 and 50 <= avg_s <= 120 and 40 <avg_v <= 200:
-        return "MEDIUM", img_rgb_rectangle
+        return "MEDIUM"
     elif 0 <= avg_h <= 30 and 60 <= avg_s <= 150 and 20 <avg_v <= 100:
-        return "DARK", img_rgb_rectangle
+        return "DARK"
     else:
         return "An Unknown Skin Tone"
 
@@ -135,14 +136,8 @@ if (selected=='Detector Site'):
             st.image(uploaded_file, caption='Uploaded Image', use_container_width=True)
             st.write("")
             st.write("Classifying...")
-
-            result, rectangle_img = skinTone_detector(uploaded_file)
-            st.session_state.result = result
-            st.session_state.rectangle_img = rectangle_img
-
-            if rectangle_img is not None:
-                st.image(rectangle_img, caption='Detected Face', use_container_width=True)
             # Menampilkan hasil klasifikasi
+            st.session_state.result = skinTone_detector(uploaded_file)
             st.button('See Result', on_click=go_to_result)
     
     elif st.session_state.subpage == "take_photo":
@@ -155,14 +150,8 @@ if (selected=='Detector Site'):
             st.image(picture, caption='Captured Image', use_container_width=True)
             st.write("")
             st.write("Classifying...")
-
-            result, rectangle_img = skinTone_detector(picture)
-            st.session_state.result = result
-            st.session_state.rectangle_img = rectangle_img
-
-            if rectangle_img is not None:
-                st.image(rectangle_img, caption='Detected Face', use_container_width=True)
             # Menampilkan hasil klasifikasi
+            st.session_state.result = skinTone_detector(picture)
             st.button('See Result', on_click=go_to_result)
     
     # halaman hasil
